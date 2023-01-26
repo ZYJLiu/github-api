@@ -20,14 +20,12 @@ export default function Home({ data }) {
   // }, [])
 
   return (
-    <VStack justifyContent="center">
+    <VStack>
       <Text as="b">Test</Text>
       {data && (
-        <VStack>
+        <VStack alignItems="left">
           {data.map((item) => (
-            <VStack width="75vw" alignItems="left">
-              <Data item={item} />
-            </VStack>
+            <Data item={item} />
           ))}
         </VStack>
       )}
