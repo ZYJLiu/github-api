@@ -1,7 +1,9 @@
 import { VStack, Code, Link } from "@chakra-ui/react"
-import { octokit } from "@/utils/octokit"
 import { useEffect, useState } from "react"
-import axios from "axios"
+import {
+  fetchGitHubPullRequestFiles,
+  fetchGitHubPullRequestFileData,
+} from "../utils/octokit"
 
 interface Props {
   item: any
@@ -13,37 +15,24 @@ const Data: React.FC<Props> = ({ item }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await octokit.request(
-        "GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
-        {
-          owner: "solana-foundation",
-          repo: "solana-improvement-documents",
-          pull_number: item.number,
-        }
-      )
-      setData(res.data[0])
+      const res = await fetchGitHubPullRequestFiles(item.number)
+      // console.log(res)
+      setData(res)
     }
     fetchData()
   }, [item])
 
-  const reformatURL = (url) => {
-    let newURL = url.replace("github.com", "raw.githubusercontent.com")
-    newURL = newURL.replace("/raw/", "/")
-    newURL = newURL.replace("%2F", "/")
-    return newURL
-  }
-
   useEffect(() => {
-    const fetchData = async (newURL) => {
-      const res = await axios.get(newURL)
-      const data = JSON.stringify(res.data, null, 2)
-      setMarkdown(res.data)
-      console.log(res.data)
+    const fetchData = async (url) => {
+      // console.log(url)
+      const data = await fetchGitHubPullRequestFileData(url)
+      // console.log(md)
+      setMarkdown(data)
     }
 
     if (data) {
-      const convertedURL = reformatURL(data.raw_url)
-      fetchData(convertedURL)
+      // console.log("raw", data[0].raw_url)
+      fetchData(data[0].raw_url)
     }
   }, [data])
 

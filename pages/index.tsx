@@ -1,28 +1,23 @@
 import { VStack, Text } from "@chakra-ui/react"
 import { useEffect } from "react"
-import { octokit } from "../utils/octokit"
+// import { octokit } from "../utils/octokit"
 import Data from "../components/Data"
+import { fetchGitHubPullRequests } from "../utils/octokit"
 
 export async function getStaticProps() {
-  const res = await octokit.request(
-    `GET /repos/{owner}/{repo}/pulls{?state,head,base,sort,direction,per_page,page}`,
-    {
-      owner: "solana-foundation",
-      repo: "solana-improvement-documents",
-    }
-  )
-  console.log(res.data)
-  return { props: { data: res.data } }
+  const data = await fetchGitHubPullRequests()
+  return { props: { data } }
 }
 
 export default function Home({ data }) {
-  useEffect(() => {
-    const fetchData = async () => {
-      const limit = await octokit.request("GET /rate_limit", {})
-      console.log(JSON.stringify(limit.data, null, 2))
-    }
-    fetchData()
-  }, [])
+  // console.log(data)
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const limit = await octokit.request("GET /rate_limit", {})
+  //     console.log(JSON.stringify(limit.data, null, 2))
+  //   }
+  //   fetchData()
+  // }, [])
 
   return (
     <VStack justifyContent="center">
