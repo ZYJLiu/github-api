@@ -9,45 +9,16 @@ import {
   TableContainer,
 } from "@chakra-ui/react"
 // import { octokit } from "../utils/octokit"
-import {
-  fetchRepo,
-  fetchGitHubPullRequests,
-  fetchGitHubRawFileData,
-  parseMetadata,
-} from "@/utils/utils"
+import { fetchData } from "@/utils/utils"
 import TableRow from "@/components/TableRow"
 
 export async function getStaticProps() {
-  const [dataPr, dataRepo] = await Promise.all([
-    fetchGitHubPullRequests(),
-    fetchRepo(),
-  ])
-  const items = [...dataRepo, ...dataPr]
-
-  // Use the `map` method to fetch and parse the metadata for each item
-  const metadataPromises = items.map(async (item) => {
-    if (!Array.isArray(item.download_url)) {
-      item.download_url = [item.download_url]
-    }
-    const dataPromises = item.download_url.map(async (url) => {
-      return await fetchGitHubRawFileData(url)
-    })
-    const dataArray = await Promise.all(dataPromises)
-    try {
-      return JSON.parse(JSON.stringify(parseMetadata(dataArray.join(""))))
-    } catch (e) {
-      console.log("fail parse")
-    }
-  })
-
-  // Wait for all the metadata to be fetched and parsed
-  const metadata = await Promise.all(metadataPromises)
-
-  return { props: { items, metadata }, revalidate: 1 }
+  const { items } = await fetchData()
+  return { props: { items }, revalidate: 1 }
 }
 
-export default function Home({ items, metadata }) {
-  console.log(metadata)
+export default function Home({ items }) {
+  console.log(items)
   return (
     <VStack>
       <TableContainer>
@@ -67,7 +38,7 @@ export default function Home({ items, metadata }) {
           </Thead>
           <Tbody>
             {items.map((item, index) => (
-              <TableRow key={index} item={item} metadata={metadata[index]} />
+              <TableRow key={index} item={item} />
             ))}
           </Tbody>
         </Table>

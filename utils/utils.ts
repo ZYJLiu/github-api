@@ -108,3 +108,32 @@ export const parseMetadata = (data) => {
   }
   return result
 }
+
+export async function fetchData() {
+  const [pullRequests, repo] = await Promise.all([
+    fetchGitHubPullRequests(),
+    fetchRepo(),
+  ])
+
+  const items = await Promise.all(
+    [...pullRequests, ...repo].map(async (item) => {
+      if (!Array.isArray(item.download_url)) {
+        item.download_url = [item.download_url]
+      }
+      const dataArray = await Promise.all(
+        item.download_url.map(async (url) => {
+          return await fetchGitHubRawFileData(url)
+        })
+      )
+      try {
+        item.metadata = JSON.parse(
+          JSON.stringify(parseMetadata(dataArray.join("")))
+        )
+      } catch (e) {
+        console.log("Failed to parse metadata")
+      }
+      return item
+    })
+  )
+  return { items }
+}

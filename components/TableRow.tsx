@@ -1,36 +1,33 @@
 import { Link as ChakraLink, Tr, Td } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
-import { fetchGitHubRawFileData, parseMetadata } from "@/utils/utils"
 import Link from "next/link"
 
 interface Props {
   item: any
-  metadata: any
 }
 
-const TableRow: React.FC<Props> = ({ item, metadata }) => {
-  if (!metadata) return null
+const TableRow: React.FC<Props> = ({ item }) => {
+  // if (!metadata) return null
 
   return (
     <Tr>
-      <Td>{metadata.simd}</Td>
+      <Td>{item.metadata.simd}</Td>
       {/* <Td>{metadata.title}</Td> */}
       <Td>
         <Link href={`/simd/${item.number ? item.number : item.name}`}>
-          {metadata.title}
+          {item.metadata.title}
         </Link>
       </Td>
-      <Td>{metadata.status}</Td>
-      <Td>{metadata.type}</Td>
+      <Td>{item.metadata.status}</Td>
+      <Td>{item.metadata.type}</Td>
       <Td>
-        {metadata.authors &&
-          metadata.authors.map((author, index) => (
+        {item.metadata.authors &&
+          item.metadata.authors.map((author, index) => (
             <div key={index}>
               {author.name} {author.org && `(${author.org})`}
             </div>
           ))}
       </Td>
-      <Td>{metadata.created}</Td>
+      <Td>{item.metadata.created}</Td>
       <Td>
         <ChakraLink
           href={item.html_url}
