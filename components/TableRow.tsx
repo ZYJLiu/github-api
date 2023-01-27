@@ -6,12 +6,9 @@ interface Props {
 }
 
 const TableRow: React.FC<Props> = ({ item }) => {
-  // if (!metadata) return null
-
   return (
     <Tr>
       <Td>{item.metadata.simd}</Td>
-      {/* <Td>{metadata.title}</Td> */}
       <Td>
         <Link href={`/simd/${item.number ? item.number : item.name}`}>
           {item.metadata.title}
