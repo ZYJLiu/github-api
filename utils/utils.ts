@@ -1,5 +1,4 @@
-// fetch files in the proposals folder
-export const fetchModules = async () => {
+export const fetchRepo = async () => {
   const response = await fetch(
     `https://api.github.com/repos/solana-foundation/solana-improvement-documents/contents/proposals`,
     {
@@ -8,35 +7,21 @@ export const fetchModules = async () => {
       },
     }
   )
-  const data = await response.json()
-  const files = data
-    //@ts-ignore
-    .filter((item) => item.type === "file")
-    //@ts-ignore
-    .map((item) => ({
-      name: item.name,
-      path: item.path,
-      download_url: item.download_url,
-      html_url: item.html_url,
-    }))
-  return [{ files }]
+  const json = await response.json()
+  return (
+    json
+      // @ts-ignore
+      .filter((item) => item.type === "file")
+      // @ts-ignore
+      .map(({ name, download_url, html_url }) => ({
+        name, // file name
+        download_url, // raw url
+        html_url, // github url
+      }))
+  )
 }
-
 // fetch all pull requests
 export const fetchGitHubPullRequests = async () => {
-  //@ts-ignore
-  return await fetch(
-    `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls`,
-    {
-      headers: {
-        authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
-      },
-    }
-  ).then((res) => res.json())
-}
-
-// fetch all pull requests
-export const fetchGitHubPullRequestsTest = async () => {
   const response = await fetch(
     `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls`,
     {
@@ -49,14 +34,14 @@ export const fetchGitHubPullRequestsTest = async () => {
   const pullRequests = json.map(
     // @ts-ignore
     ({ html_url, number, title, user: { html_url: userHtmlUrl } }) => ({
-      html_url,
-      number,
-      title,
-      userHtmlUrl,
+      html_url, // github url
+      number, // pull request number
+      title, // pull request title
+      userHtmlUrl, // user github url
     })
   )
   const requestPromises = pullRequests.map(({ number }) =>
-    fetchGitHubPullRequestFilesTest(number)
+    fetchGitHubPullRequestFiles(number)
   )
   const download_url = await Promise.all(requestPromises)
   pullRequests.forEach((pullRequest, index) => {
@@ -65,9 +50,9 @@ export const fetchGitHubPullRequestsTest = async () => {
   return pullRequests
 }
 
-export const fetchGitHubPullRequestFilesTest = async (number) => {
+export const fetchGitHubPullRequestFiles = async (input) => {
   return await fetch(
-    `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls/${number}/files`,
+    `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls/${input}/files`,
     {
       headers: {
         authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
@@ -76,19 +61,6 @@ export const fetchGitHubPullRequestFilesTest = async (number) => {
   )
     .then((res) => res.json())
     .then((data) => data.map(({ raw_url }) => reformatURL(raw_url)))
-}
-
-// fetch pull request files
-//@ts-ignore
-export const fetchGitHubPullRequestFiles = async (number) => {
-  return await fetch(
-    `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls/${number}/files`,
-    {
-      headers: {
-        authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
-      },
-    }
-  ).then((res) => res.json())
 }
 
 //@ts-ignore
@@ -105,16 +77,7 @@ export const fetchGitHubRawFileData = async (url) => {
   return await fetch(url).then((res) => res.text())
 }
 
-//@ts-ignore
-export const fetchGitHubFile = async (url) => {
-  return await fetch(url, {
-    headers: {
-      authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
-    },
-  }).then((res) => res.text())
-}
-
-// parse md files
+// parse md file header
 export const parseMetadata = (data) => {
   const re = /---\n(.*)\n---/gs
   const match = re.exec(data)

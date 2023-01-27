@@ -1,68 +1,53 @@
 import {
   VStack,
-  Text,
-  Code,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
-  Td,
   TableCaption,
   TableContainer,
 } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
 // import { octokit } from "../utils/octokit"
-import Data from "@/components/Data"
 import {
+  fetchRepo,
   fetchGitHubPullRequests,
-  fetchModules,
-  fetchGitHubFile,
   fetchGitHubRawFileData,
-  fetchGitHubPullRequestsTest,
+  parseMetadata,
 } from "@/utils/utils"
-import DataProposal from "@/components/DataProposal"
+import TableRow from "@/components/TableRow"
 
 export async function getStaticProps() {
-  const testdata = await fetchGitHubPullRequestsTest()
-  const data = await fetchGitHubPullRequests()
-  const proposalData = await fetchModules()
-  console.log(proposalData)
-  return { props: { data, proposalData, testdata }, revalidate: 1 }
+  const [dataPr, dataRepo] = await Promise.all([
+    fetchGitHubPullRequests(),
+    fetchRepo(),
+  ])
+  const items = [...dataRepo, ...dataPr]
+
+  // Use the `map` method to fetch and parse the metadata for each item
+  const metadataPromises = items.map(async (item) => {
+    if (!Array.isArray(item.download_url)) {
+      item.download_url = [item.download_url]
+    }
+    const dataPromises = item.download_url.map(async (url) => {
+      return await fetchGitHubRawFileData(url)
+    })
+    const dataArray = await Promise.all(dataPromises)
+    try {
+      return JSON.parse(JSON.stringify(parseMetadata(dataArray.join(""))))
+    } catch (e) {
+      console.log("fail parse")
+    }
+  })
+
+  // Wait for all the metadata to be fetched and parsed
+  const metadata = await Promise.all(metadataPromises)
+
+  return { props: { items, metadata }, revalidate: 1 }
 }
 
-export default function Home({
-  data,
-  proposalData,
-  testdata,
-}: {
-  data: any
-  proposalData: any
-  testdata: any
-}) {
-  console.log(proposalData)
-
-  async function test() {
-    const test = await fetchGitHubPullRequestsTest()
-    console.log(test)
-  }
-  test()
-  // const [markdown, setMarkdown] = useState(null)
-  // // console.log(data)
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const test = await fetchModules()
-  //     console.log(test[0].files[0].download_url)
-  //     console.log(test[0].files[1].download_url)
-  //     const file = await fetchGitHubRawFileData(test[0].files[0].download_url)
-  //     setMarkdown(file)
-  //     // const limit = await octokit.request("GET /rate_limit", {})
-  //     // console.log(JSON.stringify(limit.data, null, 2))
-  //   }
-  //   fetchData()
-  // }, [])
-
+export default function Home({ items, metadata }) {
+  console.log(metadata)
   return (
     <VStack>
       <TableContainer>
@@ -72,8 +57,6 @@ export default function Home({
           </TableCaption>
           <Thead>
             <Tr>
-              <Th>Github</Th>
-              <Th>Page</Th>
               <Th>SIMD</Th>
               <Th>Title</Th>
               <Th>Status</Th>
@@ -82,37 +65,35 @@ export default function Home({
               <Th>Created</Th>
             </Tr>
           </Thead>
-          {testdata && (
-            <Tbody>
-              {testdata.map((item: any) => (
-                <DataProposal item={item} />
-              ))}
-            </Tbody>
-          )}
-          {/* {data && (
-            <Tbody>
-              {data.map((item: any) => (
-                <Data item={item} />
-              ))}
-            </Tbody>
-          )} */}
-          {proposalData && (
-            <Tbody>
-              {proposalData[0].files.map((item: any) => (
-                <DataProposal item={item} />
-              ))}
-            </Tbody>
-          )}
+          <Tbody>
+            {items.map((item, index) => (
+              <TableRow key={index} item={item} metadata={metadata[index]} />
+            ))}
+          </Tbody>
         </Table>
       </TableContainer>
     </VStack>
   )
 }
 
-{
-  /* {markdown && (
-        <Code whiteSpace="pre" fontFamily="mono" width="50vw">
-          {markdown}
-        </Code>
-      )} */
-}
+// async function test() {
+//   const test = await fetchRepo()
+//   const test2 = await fetchGitHubPullRequests()
+//   console.log(test)
+//   console.log(test2)
+// }
+// test()
+// const [markdown, setMarkdown] = useState(null)
+// // console.log(data)
+// useEffect(() => {
+//   const fetchData = async () => {
+//     const test = await fetchModules()
+//     console.log(test[0].files[0].download_url)
+//     console.log(test[0].files[1].download_url)
+//     const file = await fetchGitHubRawFileData(test[0].files[0].download_url)
+//     setMarkdown(file)
+//     // const limit = await octokit.request("GET /rate_limit", {})
+//     // console.log(JSON.stringify(limit.data, null, 2))
+//   }
+//   fetchData()
+// }, [])
