@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Page: React.FC<Props> = ({ item }) => {
-  console.log(item)
+  // console.log(item)
   const [markdown, setMarkdown] = useState(null)
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Page: React.FC<Props> = ({ item }) => {
       const res = await fetchGitHubPullRequestFiles(item)
       const data = res.filter((el: any) => el !== null)
       const dataPromises = data.map(async (url: any) => {
-        console.log(url)
+        // console.log(url)
         return await fetchGitHubRawFileData(url)
       })
       const dataArray = await Promise.all(dataPromises)

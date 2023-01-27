@@ -1,5 +1,6 @@
 import { Link as ChakraLink, Tr, Td } from "@chakra-ui/react"
 import Link from "next/link"
+import { useRouter } from "next/router"
 
 interface Props {
   item: any
@@ -10,9 +11,7 @@ const TableRow: React.FC<Props> = ({ item }) => {
     <Tr>
       <Td>{item.metadata.simd}</Td>
       <Td>
-        <Link href={`/simd/${item.number ? item.number : item.name}`}>
-          {item.metadata.title}
-        </Link>
+        <Link href={`/simd/${item.id}`}>{item.metadata.title}</Link>
       </Td>
       <Td>{item.metadata.status}</Td>
       <Td>{item.metadata.type}</Td>
@@ -38,9 +37,7 @@ const TableRow: React.FC<Props> = ({ item }) => {
         </ChakraLink>
       </Td>
       <Td>
-        <Link href={`/simd/${item.number ? item.number : item.name}`}>
-          Page
-        </Link>
+        <Link href={`/simd/${item.id}`}>Page</Link>
       </Td>
     </Tr>
   )

@@ -13,7 +13,7 @@ import { fetchData } from "@/utils/utils"
 import TableRow from "@/components/TableRow"
 
 export async function getStaticProps() {
-  const { items } = await fetchData()
+  const items = await fetchData()
   return { props: { items }, revalidate: 1 }
 }
 

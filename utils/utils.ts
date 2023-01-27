@@ -1,3 +1,4 @@
+// fetch all files from repo
 export const fetchRepo = async () => {
   const response = await fetch(
     `https://api.github.com/repos/solana-foundation/solana-improvement-documents/contents/proposals`,
@@ -13,7 +14,8 @@ export const fetchRepo = async () => {
       // @ts-ignore
       .filter((item) => item.type === "file")
       // @ts-ignore
-      .map(({ name, download_url, html_url }) => ({
+      .map(({ sha, name, download_url, html_url }) => ({
+        id: sha, // use sha hash as id
         name, // file name
         download_url, // raw url
         html_url, // github url
@@ -33,9 +35,10 @@ export const fetchGitHubPullRequests = async () => {
   const json = await response.json()
   const pullRequests = json.map(
     // @ts-ignore
-    ({ html_url, number, title, user: { html_url: userHtmlUrl } }) => ({
+    ({ id, html_url, number, title, user: { html_url: userHtmlUrl } }) => ({
+      id, // pull request id
       html_url, // github url
-      number, // pull request number
+      number, // pull request number, use to fetch PR files
       title, // pull request title
       userHtmlUrl, // user github url
     })
@@ -135,5 +138,5 @@ export async function fetchData() {
       return item
     })
   )
-  return { items }
+  return items
 }
