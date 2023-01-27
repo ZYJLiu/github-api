@@ -34,6 +34,8 @@ export default function Home({ items }) {
               <Th>Type</Th>
               <Th>Authors</Th>
               <Th>Created</Th>
+              <Th>Github</Th>
+              <Th>Temp</Th>
             </Tr>
           </Thead>
           <Tbody>
