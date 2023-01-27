@@ -12,6 +12,7 @@ interface Props {
 }
 
 const Page: React.FC<Props> = ({ item }) => {
+  console.log(item)
   const [data, setData] = useState(null)
   const [markdown, setMarkdown] = useState(null)
 

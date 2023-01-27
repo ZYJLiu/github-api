@@ -1,19 +1,4 @@
-import {
-  VStack,
-  Code,
-  Link as ChakraLink,
-  HStack,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-} from "@chakra-ui/react"
+import { Link as ChakraLink, Tr, Td } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import {
   fetchGitHubRawFileData,
@@ -21,7 +6,6 @@ import {
   parseMetadata,
   reformatURL,
 } from "@/utils/utils"
-import { useRouter } from "next/router"
 import Link from "next/link"
 
 interface Props {
@@ -30,13 +14,11 @@ interface Props {
 
 const Data: React.FC<Props> = ({ item }) => {
   const [data, setData] = useState(null)
-  const [markdown, setMarkdown] = useState(null)
   const [metadata, setMetadata] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetchGitHubPullRequestFiles(item.number)
-      // console.log(res)
       setData(res)
     }
     fetchData()

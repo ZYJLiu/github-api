@@ -1,27 +1,6 @@
-import {
-  VStack,
-  Code,
-  Link as ChakraLink,
-  HStack,
-  Text,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-} from "@chakra-ui/react"
+import { Link as ChakraLink, Tr, Td } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import {
-  fetchGitHubPullRequestFiles,
-  fetchGitHubRawFileData,
-  parseMetadata,
-  reformatURL,
-} from "@/utils/utils"
-import { useRouter } from "next/router"
+import { fetchGitHubRawFileData, parseMetadata } from "@/utils/utils"
 import Link from "next/link"
 
 interface Props {
@@ -29,7 +8,6 @@ interface Props {
 }
 
 const DataProposal: React.FC<Props> = ({ item }) => {
-  const [data, setData] = useState(null)
   const [markdown, setMarkdown] = useState(null)
   const [metadata, setMetadata] = useState(null)
 
@@ -37,19 +15,19 @@ const DataProposal: React.FC<Props> = ({ item }) => {
     const fetchData = async (url) => {
       // console.log(url)
       const data = await fetchGitHubRawFileData(url)
-      // console.log(data)
-      const metadata = parseMetadata(data)
-      console.log(metadata)
-      setMetadata(metadata)
-      // console.log(md)
+      try {
+        const metadata = parseMetadata(data)
+        setMetadata(metadata)
+
+        console.log(JSON.stringify(metadata, null, 2))
+      } catch (e) {
+        console.log("fail parse", item.number)
+      }
       setMarkdown(data)
     }
 
     if (item) {
       fetchData(item.download_url)
-      // console.log("raw", data[0].raw_url)
-      console.log(item.download_url)
-      console.log(item.html_url)
     }
   }, [item])
 
@@ -68,7 +46,11 @@ const DataProposal: React.FC<Props> = ({ item }) => {
         </ChakraLink>
       </Td>
       <Td>
-        <Link href={`/simd/${item.title}`}> Page</Link>
+        {/* <Link href={`/simd/${item.number}`}> Page</Link> */}
+        <Link href={`/simd/${item.number ? item.number : item.title}`}>
+          {" "}
+          Page
+        </Link>
       </Td>
       {metadata && (
         <>

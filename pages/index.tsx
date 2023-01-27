@@ -20,24 +20,34 @@ import {
   fetchModules,
   fetchGitHubFile,
   fetchGitHubRawFileData,
+  fetchGitHubPullRequestsTest,
 } from "@/utils/utils"
 import DataProposal from "@/components/DataProposal"
 
 export async function getStaticProps() {
+  const testdata = await fetchGitHubPullRequestsTest()
   const data = await fetchGitHubPullRequests()
   const proposalData = await fetchModules()
   console.log(proposalData)
-  return { props: { data, proposalData }, revalidate: 1 }
+  return { props: { data, proposalData, testdata }, revalidate: 1 }
 }
 
 export default function Home({
   data,
   proposalData,
+  testdata,
 }: {
   data: any
   proposalData: any
+  testdata: any
 }) {
   console.log(proposalData)
+
+  async function test() {
+    const test = await fetchGitHubPullRequestsTest()
+    console.log(test)
+  }
+  test()
   // const [markdown, setMarkdown] = useState(null)
   // // console.log(data)
   // useEffect(() => {
@@ -55,10 +65,11 @@ export default function Home({
 
   return (
     <VStack>
-      <Text as="b">Test</Text>
       <TableContainer>
         <Table>
-          <TableCaption>SIMD Information</TableCaption>
+          <TableCaption fontWeight="bold" placement="top">
+            SIMD Information
+          </TableCaption>
           <Thead>
             <Tr>
               <Th>Github</Th>
@@ -71,13 +82,20 @@ export default function Home({
               <Th>Created</Th>
             </Tr>
           </Thead>
-          {data && (
+          {testdata && (
+            <Tbody>
+              {testdata.map((item: any) => (
+                <DataProposal item={item} />
+              ))}
+            </Tbody>
+          )}
+          {/* {data && (
             <Tbody>
               {data.map((item: any) => (
                 <Data item={item} />
               ))}
             </Tbody>
-          )}
+          )} */}
           {proposalData && (
             <Tbody>
               {proposalData[0].files.map((item: any) => (
