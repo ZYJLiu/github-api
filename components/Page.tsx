@@ -1,15 +1,11 @@
-import {
-  VStack,
-  Code,
-  Link as ChakraLink,
-  HStack,
-  Text,
-} from "@chakra-ui/react"
+import { Code, HStack } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import {
   fetchGitHubPullRequestFiles,
-  fetchGitHubPullRequestFileData,
-} from "../utils/octokit"
+  fetchGitHubRawFileData,
+  reformatURL,
+  parseMetadata,
+} from "../utils/utils"
 
 interface Props {
   item: any
@@ -20,6 +16,7 @@ const Page: React.FC<Props> = ({ item }) => {
   const [markdown, setMarkdown] = useState(null)
 
   useEffect(() => {
+    if (!item) return
     const fetchData = async () => {
       const res = await fetchGitHubPullRequestFiles(item)
       // console.log(res)
@@ -29,15 +26,14 @@ const Page: React.FC<Props> = ({ item }) => {
   }, [item])
 
   useEffect(() => {
-    const fetchData = async (url) => {
-      // console.log(url)
-      const data = await fetchGitHubPullRequestFileData(url)
-      // console.log(md)
+    const fetchData = async (url: any) => {
+      const data = await fetchGitHubRawFileData(reformatURL(url))
+      //@ts-ignore
       setMarkdown(data)
     }
 
     if (data) {
-      // console.log("raw", data[0].raw_url)
+      //@ts-ignore
       fetchData(data[0].raw_url)
     }
   }, [data])

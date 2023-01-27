@@ -7,8 +7,8 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import {
-  fetchGitHubRawFileData,
   fetchGitHubPullRequestFiles,
+  fetchGitHubRawFileData,
   parseMetadata,
   reformatURL,
 } from "@/utils/utils"
@@ -19,60 +19,30 @@ interface Props {
   item: any
 }
 
-const Data: React.FC<Props> = ({ item }) => {
+const DataProposal: React.FC<Props> = ({ item }) => {
   const [data, setData] = useState(null)
   const [markdown, setMarkdown] = useState(null)
   const [metadata, setMetadata] = useState(null)
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetchGitHubPullRequestFiles(item.number)
-      // console.log(res)
-      setData(res)
-    }
-    fetchData()
-  }, [item])
-
-  // useEffect(() => {
-  //   if (data) {
-  //     const rawURL = reformatURL(data[0].raw_url)
-  //     console.log(rawURL)
-  //   }
-  // }, [data])
-  useEffect(() => {
     const fetchData = async (url) => {
       // console.log(url)
-      const data = await fetchGitHubRawFileData(reformatURL(url))
-      try {
-        const metadata = parseMetadata(data)
-        setMetadata(metadata)
-        //  const metadataArray = Object.entries(metadata).map(
-        //    ([key, value]) => ({
-        //      key,
-        //      value,
-        //    })
-        //  )
-        // console.log(metadataArray)
-        // const metadataArray = Object.entries(metadata).map(([key, value]) => (
-        //   <p key={key}>{`${key}: ${value}`}</p>
-        // ))
-        // setMetadata(metadata)
-        console.log(JSON.stringify(metadata, null, 2))
-        // console.log(item.number)
-      } catch (e) {
-        console.log("fail parse", item.number)
-      }
-      // const md = await fetchGitHubRawFileData(reformatURL(url))
-
+      const data = await fetchGitHubRawFileData(url)
+      // console.log(data)
+      const metadata = parseMetadata(data)
+      console.log(metadata)
+      setMetadata(metadata)
       // console.log(md)
       setMarkdown(data)
     }
 
-    if (data) {
+    if (item) {
+      fetchData(item.download_url)
       // console.log("raw", data[0].raw_url)
-      fetchData(data[0].raw_url)
+      console.log(item.download_url)
+      console.log(item.html_url)
     }
-  }, [data])
+  }, [item])
 
   return (
     <HStack alignItems="top">
@@ -86,7 +56,7 @@ const Data: React.FC<Props> = ({ item }) => {
       >
         Github
       </ChakraLink>
-      <Link href={`/simd/${item.number}`}> Page {item.number}</Link>
+      <Link href={`/simd/${item.title}`}> Page</Link>
       {metadata && (
         <VStack alignItems="left">
           <Text> {metadata.title}</Text>
@@ -118,4 +88,4 @@ const Data: React.FC<Props> = ({ item }) => {
   )
 }
 
-export default Data
+export default DataProposal
