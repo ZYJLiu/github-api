@@ -1,4 +1,17 @@
-import { VStack, Text, Code } from "@chakra-ui/react"
+import {
+  VStack,
+  Text,
+  Code,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+} from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 // import { octokit } from "../utils/octokit"
 import Data from "@/components/Data"
@@ -43,27 +56,45 @@ export default function Home({
   return (
     <VStack>
       <Text as="b">Test</Text>
-      {/* {markdown && (
+      <TableContainer>
+        <Table>
+          <TableCaption>SIMD Information</TableCaption>
+          <Thead>
+            <Tr>
+              <Th>Github</Th>
+              <Th>Page</Th>
+              <Th>SIMD</Th>
+              <Th>Title</Th>
+              <Th>Status</Th>
+              <Th>Type</Th>
+              <Th>Authors</Th>
+              <Th>Created</Th>
+            </Tr>
+          </Thead>
+          {data && (
+            <Tbody>
+              {data.map((item: any) => (
+                <Data item={item} />
+              ))}
+            </Tbody>
+          )}
+          {proposalData && (
+            <Tbody>
+              {proposalData[0].files.map((item: any) => (
+                <DataProposal item={item} />
+              ))}
+            </Tbody>
+          )}
+        </Table>
+      </TableContainer>
+    </VStack>
+  )
+}
+
+{
+  /* {markdown && (
         <Code whiteSpace="pre" fontFamily="mono" width="50vw">
           {markdown}
         </Code>
-      )} */}
-      <VStack alignItems="left">
-        {data && (
-          <VStack alignItems="left">
-            {data.map((item: any) => (
-              <Data item={item} />
-            ))}
-          </VStack>
-        )}
-        {proposalData && (
-          <VStack alignItems="left">
-            {proposalData[0].files.map((item: any) => (
-              <DataProposal item={item} />
-            ))}
-          </VStack>
-        )}
-      </VStack>
-    </VStack>
-  )
+      )} */
 }
