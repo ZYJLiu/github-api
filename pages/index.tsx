@@ -11,14 +11,27 @@ import {
 // import { octokit } from "../utils/octokit"
 import { fetchData } from "@/utils/utils"
 import TableRow from "@/components/TableRow"
+import { useEffect } from "react"
 
 export async function getStaticProps() {
   const items = await fetchData()
-  return { props: { items }, revalidate: 1 }
+  return { props: { items }, revalidate: 300 }
 }
 
 export default function Home({ items }) {
-  console.log(items)
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const res = await fetch(`https://api.github.com/rate_limit`, {
+  //       headers: {
+  //         authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+  //       },
+  //     })
+  //     const limit = await res.json()
+  //     console.log(JSON.stringify(limit, null, 2))
+  //   }
+  //   fetchData()
+  // }, [])
+
   return (
     <VStack>
       <TableContainer>
@@ -38,16 +51,29 @@ export default function Home({ items }) {
               <Th>Temp</Th>
             </Tr>
           </Thead>
-          <Tbody>
+          {/* <Tbody>
             {items.map((item, index) => (
               <TableRow key={index} item={item} />
             ))}
-          </Tbody>
+          </Tbody> */}
         </Table>
       </TableContainer>
     </VStack>
   )
 }
+
+// useEffect(() => {
+//   const fetchData = async () => {
+//     const res = await fetch(`https://api.github.com/rate_limit`, {
+//       headers: {
+//         authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+//       },
+//     })
+//     const limit = await res.json()
+//     console.log(JSON.stringify(limit, null, 2))
+//   }
+//   fetchData()
+// }, [])
 
 // async function test() {
 //   const test = await fetchRepo()

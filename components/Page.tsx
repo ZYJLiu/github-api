@@ -24,6 +24,7 @@ const Page: React.FC<Props> = ({ item }) => {
       })
       const dataArray = await Promise.all(dataPromises)
       const markdownData = dataArray.join("")
+      //@ts-ignore
       setMarkdown(markdownData)
     }
     fetchData()
