@@ -19,18 +19,18 @@ export async function getStaticProps() {
 }
 
 export default function Home({ items }) {
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const res = await fetch(`https://api.github.com/rate_limit`, {
-  //       headers: {
-  //         authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
-  //       },
-  //     })
-  //     const limit = await res.json()
-  //     console.log(JSON.stringify(limit, null, 2))
-  //   }
-  //   fetchData()
-  // }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(`https://api.github.com/rate_limit`, {
+        headers: {
+          authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
+        },
+      })
+      const limit = await res.json()
+      console.log(JSON.stringify(limit, null, 2))
+    }
+    fetchData()
+  }, [])
 
   return (
     <VStack>
@@ -51,11 +51,11 @@ export default function Home({ items }) {
               <Th>Temp</Th>
             </Tr>
           </Thead>
-          {/* <Tbody>
+          <Tbody>
             {items.map((item, index) => (
               <TableRow key={index} item={item} />
             ))}
-          </Tbody> */}
+          </Tbody>
         </Table>
       </TableContainer>
     </VStack>

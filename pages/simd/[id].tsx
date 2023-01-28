@@ -8,7 +8,7 @@ export async function getStaticPaths() {
     params: { id: id.toString() },
   }))
 
-  return { paths, fallback: false, revalidate: 300 }
+  return { paths, fallback: false }
 }
 
 export async function getStaticProps({ params }) {
@@ -17,14 +17,12 @@ export async function getStaticProps({ params }) {
   if (itemIndex === -1) return { props: {} }
   return { props: { item: items[itemIndex], items }, revalidate: 300 }
 }
-
 const SIMD: React.FC<{ item: any }> = ({ item }) => {
   const [markdown, setMarkdown] = useState(null)
 
   useEffect(() => {
     if (!item) return
     const fetchData = async () => {
-      // Use map instead of forEach to get an array of promises
       const dataPromises = item.download_url.map(async (url) => {
         return await fetchGitHubRawFileData(url)
       })
