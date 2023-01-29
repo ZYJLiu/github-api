@@ -1,4 +1,19 @@
-import { Code, VStack, Text } from "@chakra-ui/react"
+import {
+  Code,
+  VStack,
+  Text,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
+  Link as ChakraLink,
+  Link,
+} from "@chakra-ui/react"
 import { useEffect, useState, Fragment } from "react"
 import { fetchGitHubRawFileData, fetchData } from "../../utils/utils"
 
@@ -52,16 +67,87 @@ const SIMD: React.FC<{ item: any }> = ({ item }) => {
 
   return (
     <VStack alignItems="center" justifyContent="center">
-      <Text>{item.metadata.simd}</Text>
-      {markdownData.sections && (
-        <Code whiteSpace="pre" fontFamily="mono" width="50vw">
-          {markdownData.sections.map((line, index) => (
-            <Text key={index}>
-              <a href={`#${line}`}>{line}</a>
-            </Text>
-          ))}
-        </Code>
-      )}
+      <TableContainer>
+        <Table>
+          <TableCaption fontWeight="bold" placement="top">
+            Details
+          </TableCaption>
+          <Thead>
+            <Tr>
+              <Th>Key</Th>
+              <Th>Value</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td>SIMD</Td>
+              <Td>{item.metadata.simd}</Td>
+            </Tr>
+            <Tr>
+              <Td>Title</Td>
+              <Td>{item.metadata.title}</Td>
+            </Tr>
+            <Tr>
+              <Td>Authors</Td>
+              <Td>
+                {item.metadata.authors
+                  ? item.metadata.authors.map((author, index) => (
+                      <div key={index}>
+                        {author.name} {author.org && `(${author.org})`}
+                      </div>
+                    ))
+                  : "-"}
+              </Td>
+            </Tr>
+            <Tr>
+              <Td>Type</Td>
+              <Td>{item.metadata.type}</Td>
+            </Tr>
+            <Tr>
+              <Td>Status</Td>
+              <Td>{item.metadata.status}</Td>
+            </Tr>
+            <Tr>
+              <Td>Created</Td>
+              <Td>{item.metadata.created}</Td>
+            </Tr>
+            <Tr>
+              <Td>Github Link</Td>
+              <Td>
+                <ChakraLink
+                  href={item.html_url}
+                  isExternal
+                  color="blue.500"
+                  _hover={{
+                    color: "blue.600",
+                  }}
+                >
+                  Github Icon
+                </ChakraLink>
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </TableContainer>
+
+      <TableContainer>
+        <Table>
+          <TableCaption fontWeight="bold" placement="top">
+            Content
+          </TableCaption>
+          <Tbody>
+            {markdownData.sections &&
+              markdownData.sections.map((line, index) => (
+                <Tr key={index}>
+                  <Td>
+                    <a href={`#${line}`}>{line}</a>
+                  </Td>
+                </Tr>
+              ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+
       {markdownData.filtered && (
         <Code whiteSpace="pre" fontFamily="mono" width="50vw">
           {markdownData.filtered.split("\n").map((line, index) => {
