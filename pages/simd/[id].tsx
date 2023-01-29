@@ -54,36 +54,30 @@ const SIMD: React.FC<{ item: any }> = ({ item }) => {
     <VStack alignItems="center" justifyContent="center">
       <Text>{item.metadata.simd}</Text>
       {markdownData.sections && (
-        <>
-          <Code whiteSpace="pre" fontFamily="mono" width="50vw" key={item}>
-            {markdownData.sections.map((line, index) => (
-              <Text key={index}>
-                <a href={`#${line}`}>{line}</a>
-              </Text>
-            ))}
-          </Code>
-          {markdownData.filtered && (
-            <Code whiteSpace="pre" fontFamily="mono" width="50vw" key={item}>
-              {markdownData.filtered.split("\n").map((line, index) => {
-                if (line.startsWith("## ")) {
-                  return (
-                    <Fragment key={index}>
-                      <a name={line.slice(3)} />
-                      {line}
-                      <br />
-                    </Fragment>
-                  )
-                }
+        <Code whiteSpace="pre" fontFamily="mono" width="50vw">
+          {markdownData.sections.map((line, index) => (
+            <Text key={index}>
+              <a href={`#${line}`}>{line}</a>
+            </Text>
+          ))}
+        </Code>
+      )}
+      {markdownData.filtered && (
+        <Code whiteSpace="pre" fontFamily="mono" width="50vw">
+          {markdownData.filtered.split("\n").map((line, index) => {
+            switch (true) {
+              case line.startsWith("## "):
                 return (
-                  <Fragment key={index}>
+                  <Text key={index}>
+                    <a name={line.slice(3)} />
                     {line}
-                    <br />
-                  </Fragment>
+                  </Text>
                 )
-              })}
-            </Code>
-          )}
-        </>
+              default:
+                return <Text key={index}>{line}</Text>
+            }
+          })}
+        </Code>
       )}
       <Text>Original Data</Text>
       {data && (
