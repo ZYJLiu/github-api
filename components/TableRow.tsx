@@ -5,6 +5,7 @@ interface Props {
   item: any
 }
 
+// Create table row for each SIMD
 const TableRow: React.FC<Props> = ({ item }) => {
   return (
     <Tr>

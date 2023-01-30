@@ -33,6 +33,7 @@ export async function getStaticProps({ params }) {
   return { props: { item, items }, revalidate: 300 }
 }
 
+// Content page for each SIMD
 const SIMD: React.FC<{ item: any }> = ({ item }) => {
   console.log(item)
 
@@ -52,7 +53,6 @@ const SIMD: React.FC<{ item: any }> = ({ item }) => {
       const markdown = dataArray.join("")
       setData(markdown)
 
-      // Use regular expression to match the YAML front matter
       const filtered = markdown.replace(/^---[\s\S]*?---/m, "")
 
       // parseLinesStartingWithHashtag

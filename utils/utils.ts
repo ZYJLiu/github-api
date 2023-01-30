@@ -1,4 +1,4 @@
-// fetch all files from repo
+// fetch all SIMD from repo
 export const fetchRepo = async () => {
   const response = await fetch(
     `https://api.github.com/repos/solana-foundation/solana-improvement-documents/contents/proposals`,
@@ -53,6 +53,7 @@ export const fetchGitHubPullRequests = async () => {
   return pullRequests
 }
 
+// fetch pull request files
 export const fetchGitHubPullRequestFiles = async (input) => {
   return await fetch(
     `https://api.github.com/repos/solana-foundation/solana-improvement-documents/pulls/${input}/files`,
@@ -66,6 +67,7 @@ export const fetchGitHubPullRequestFiles = async (input) => {
     .then((data) => data.map(({ raw_url }) => reformatURL(raw_url)))
 }
 
+// reformat url from pull request files (else gets a CORS error)
 //@ts-ignore
 export const reformatURL = (url) => {
   let newURL = url.replace("github.com", "raw.githubusercontent.com")
@@ -80,7 +82,7 @@ export const fetchGitHubRawFileData = async (url) => {
   return await fetch(url).then((res) => res.text())
 }
 
-// parse md file header
+// parse SIMD md file header
 export const parseMetadata = (data) => {
   const re = /---\n(.*)\n---/gs
   const match = re.exec(data)
@@ -112,6 +114,7 @@ export const parseMetadata = (data) => {
   return result
 }
 
+// fetch all data from both repo and pull requests
 export async function fetchData() {
   const [pullRequests, repo] = await Promise.all([
     fetchGitHubPullRequests(),
