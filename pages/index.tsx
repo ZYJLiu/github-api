@@ -32,6 +32,17 @@ export default function Home({ items }) {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch(
+        `https://github.com/solana-foundation/solana-improvement-documents/raw/6cc9a503210bd88ea365bdfe2a3db466dc811dfe/proposals%2F0022-multi-stake.md`
+      )
+      const json = await res.json()
+      console.log(JSON.stringify(json, null, 2))
+    }
+    fetchData()
+  }, [])
+
   return (
     <VStack>
       <TableContainer>
