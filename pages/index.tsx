@@ -7,68 +7,96 @@ import {
   Th,
   TableCaption,
   TableContainer,
+  Text,
+  Code,
 } from "@chakra-ui/react"
 // import { octokit } from "../utils/octokit"
 import { fetchData } from "@/utils/utils"
 import TableRow from "@/components/TableRow"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
-export async function getStaticProps() {
-  const items = await fetchData()
-  return { props: { items }, revalidate: 300 }
-}
+// export async function getStaticProps() {
+//   // const items = await fetchData()
+//   const items = []
+//   return { props: { items }, revalidate: 300 }
+// }
 
-export default function Home({ items }) {
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`https://api.github.com/rate_limit`, {
-        headers: {
-          authorization: `TOKEN ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
-        },
-      })
-      const limit = await res.json()
-      console.log(JSON.stringify(limit, null, 2))
+export default function Home() {
+  const [data, setData] = useState(null)
+
+  function parseData(data) {
+    const lines = data.split("\n")
+    let modules = []
+    let currentModule = {}
+    let currentModuleLessons = []
+
+    for (const line of lines) {
+      if (line === "") {
+        if (currentModule.name) {
+          currentModule.lessons = currentModuleLessons
+          modules.push(currentModule)
+          currentModuleLessons = []
+          currentModule = {}
+        }
+      } else if (line.startsWith("### Module")) {
+        if (currentModule.name) {
+          currentModule.lessons = currentModuleLessons
+          modules.push(currentModule)
+          currentModuleLessons = []
+        }
+        const moduleNumber = parseInt(
+          line
+            .substring(line.indexOf("Module") + 7)
+            .trim()
+            .split(" ")[0]
+        )
+        currentModule = {
+          number: moduleNumber,
+          name: line
+            .substring(line.indexOf("Module") + 7)
+            .trim()
+            .replace(/^\d+\s*-\s*/, ""),
+        }
+      } else if (line.match(/^\s*\d+\.\s+\[.*\]\(.*\)/)) {
+        const title = line.substring(line.indexOf("[") + 1, line.indexOf("]"))
+        const link =
+          "https://raw.githubusercontent.com/Unboxed-Software/solana-course/main" +
+          line.substring(line.indexOf("(") + 2, line.indexOf(")"))
+        currentModuleLessons.push({ title, link })
+      }
     }
-    fetchData()
-  }, [])
+    if (currentModule.name) {
+      currentModule.lessons = currentModuleLessons
+      modules.push(currentModule)
+    }
+    return modules
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch(
-        `https://github.com/solana-foundation/solana-improvement-documents/raw/6cc9a503210bd88ea365bdfe2a3db466dc811dfe/proposals%2F0022-multi-stake.md`
+        `https://raw.githubusercontent.com/Unboxed-Software/solana-course/main/README.md`
       )
-      const json = await res.json()
-      console.log(JSON.stringify(json, null, 2))
+      console.log(res)
+      const text = await res.text()
+      // console.log(JSON.stringify(json, null, 2))
+
+      const modules = parseData(text)
+      const json = JSON.stringify(modules, null, 2)
+      console.log(json)
+      setData(json)
     }
     fetchData()
   }, [])
 
   return (
     <VStack>
-      <TableContainer>
-        <Table>
-          <TableCaption fontWeight="bold" placement="top">
-            SIMD Information
-          </TableCaption>
-          <Thead>
-            <Tr>
-              <Th>SIMD</Th>
-              <Th>Title</Th>
-              <Th>Status</Th>
-              <Th>Type</Th>
-              <Th>Authors</Th>
-              <Th>Created</Th>
-              <Th>Github</Th>
-              <Th>Temp</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {items.map((item, index) => (
-              <TableRow key={index} item={item} />
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      <Text>Test</Text>
+      {data && (
+        <Code whiteSpace="pre" fontFamily="mono" width="50vw">
+          {data}
+        </Code>
+      )}
     </VStack>
   )
 }
@@ -82,28 +110,6 @@ export default function Home({ items }) {
 //     })
 //     const limit = await res.json()
 //     console.log(JSON.stringify(limit, null, 2))
-//   }
-//   fetchData()
-// }, [])
-
-// async function test() {
-//   const test = await fetchRepo()
-//   const test2 = await fetchGitHubPullRequests()
-//   console.log(test)
-//   console.log(test2)
-// }
-// test()
-// const [markdown, setMarkdown] = useState(null)
-// // console.log(data)
-// useEffect(() => {
-//   const fetchData = async () => {
-//     const test = await fetchModules()
-//     console.log(test[0].files[0].download_url)
-//     console.log(test[0].files[1].download_url)
-//     const file = await fetchGitHubRawFileData(test[0].files[0].download_url)
-//     setMarkdown(file)
-//     // const limit = await octokit.request("GET /rate_limit", {})
-//     // console.log(JSON.stringify(limit.data, null, 2))
 //   }
 //   fetchData()
 // }, [])
