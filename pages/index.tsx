@@ -21,8 +21,10 @@ import { useEffect, useState } from "react"
 //   return { props: { items }, revalidate: 300 }
 // }
 
+
 export default function Home() {
   const [data, setData] = useState(null)
+  const [modules, setModules] = useState(null)
 
   function parseData(data) {
     const lines = data.split("\n")
@@ -77,17 +79,37 @@ export default function Home() {
       const res = await fetch(
         `https://raw.githubusercontent.com/Unboxed-Software/solana-course/main/README.md`
       )
-      console.log(res)
       const text = await res.text()
       // console.log(JSON.stringify(json, null, 2))
 
       const modules = parseData(text)
       const json = JSON.stringify(modules, null, 2)
-      console.log(json)
+      // console.log(json)
       setData(json)
+      setModules(modules)
     }
     fetchData()
   }, [])
+
+
+  function printLinks(data) {
+    for (let i = 0; i < data.length; i++) {
+      console.log(`Module ${data[i].number}: ${data[i].name}`);
+      console.log(`Lessons:`);
+      for (let j = 0; j < data[i].lessons.length; j++) {
+        console.log(`${j + 1}. ${data[i].lessons[j].title}: ${data[i].lessons[j].link}`);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!modules) return
+    printLinks(modules)
+    // console.log(data)
+  }, [modules])
+
+
+
 
   return (
     <VStack>
